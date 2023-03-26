@@ -6,11 +6,13 @@ import {
   createBurger,
   updateBurger,
   deleteBurger,
-} from "./../controllers/burger";
+  getAllBurgerPageCount,
+} from "../controllers/burger";
 
 const router = express.Router();
 
 router.get("/", getAllBurger);
+router.get("/counts", getAllBurgerPageCount);
 router.get("/:id", getBurger);
 router.post("/", createBurger);
 router.put("/:id", updateBurger);

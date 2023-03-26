@@ -1,13 +1,18 @@
 import { Handler } from "express";
-import { client } from "./../db";
+import { client } from "../db";
 
 export const getAllBurger: Handler = async (req, res) => {
-  const text = "SELECT * from burger";
+  const page = parseInt(req.query.page as string) || 1;
+  const pageSize = 6;
+  const offset = (page - 1) * pageSize;
+
+  const text = "SELECT * FROM burger ORDER BY id DESC OFFSET $1 LIMIT $2";
 
   const results: Burger[] = [];
+  const values = [offset, pageSize];
 
   try {
-    const { rows } = await client.query(text);
+    const { rows } = await client.query(text, values);
 
     for (let i = 0; i < rows.length; i++) {
       results.push(rows[i]);
@@ -19,6 +24,23 @@ export const getAllBurger: Handler = async (req, res) => {
   }
 
   return res.json({ data: results });
+};
+
+export const getAllBurgerPageCount: Handler = async (req, res) => {
+  const text = "SELECT COUNT(*) FROM burger";
+
+  let result = 0;
+
+  try {
+    const { rows } = await client.query(text);
+
+    result = rows[0].count;
+  } catch (err) {
+    console.log(err);
+    return res.json({ error: "Unable to load burger counts." });
+  }
+
+  return res.json({ data: { counts: result } });
 };
 
 export const getBurger: Handler = async (req, res, next) => {
