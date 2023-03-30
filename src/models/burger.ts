@@ -1,6 +1,6 @@
 type Burger = {
-    name: string;
-    brand: string;
-    description: string;
-    userId: number;
-}
+  name: string;
+  brand: string;
+  description: string;
+  userId: string;
+};
