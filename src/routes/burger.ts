@@ -6,14 +6,17 @@ import {
   createBurger,
   updateBurger,
   deleteBurger,
-} from "./../controllers/burger";
+  getAllBurgerPageCount,
+} from "../controllers/burger";
+import { verifyingToken } from "../middlewares/auth";
 
 const router = express.Router();
 
 router.get("/", getAllBurger);
+router.get("/counts", getAllBurgerPageCount);
 router.get("/:id", getBurger);
-router.post("/", createBurger);
-router.put("/:id", updateBurger);
-router.delete("/:id", deleteBurger);
+router.post("/", verifyingToken, createBurger);
+router.put("/:id", verifyingToken, updateBurger);
+router.delete("/:id", verifyingToken, deleteBurger);
 
 export default router;
