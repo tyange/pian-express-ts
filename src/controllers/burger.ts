@@ -3,7 +3,7 @@ import { client } from "../db";
 
 export const getAllBurger: Handler = async (req, res) => {
   const page = parseInt(req.query.page as string) || 1;
-  const pageSize = 6;
+  const pageSize = 9;
   const offset = (page - 1) * pageSize;
 
   const text = "SELECT * FROM burger ORDER BY id DESC OFFSET $1 LIMIT $2";
@@ -45,9 +45,10 @@ export const getAllBurgerPageCount: Handler = async (req, res) => {
 
 export const getBurger: Handler = async (req, res, next) => {
   const id = req.params.id;
+
   const text = "SELECT * FROM burger WHERE id = $1";
 
-  const value = [...id];
+  const value = [id];
 
   const result: Burger[] = [];
 
@@ -62,6 +63,36 @@ export const getBurger: Handler = async (req, res, next) => {
   }
 
   return res.json({ data: result });
+};
+
+export const getMyBurgers: Handler = async (req, res, next) => {
+  const userId = req.params.userId;
+  const { page } = req.query;
+
+  const pageNum = parseInt(page as string) || 1;
+
+  const pageSize = 9;
+  const offset = pageNum * pageSize;
+
+  const text =
+    "SELECT * FROM burger ORDER BY id DESC OFFSET $1 LIMIT $2 WHERE userId = $3";
+
+  let results: Burger[] = [];
+  const value = [offset, pageSize, userId];
+
+  try {
+    const { rows } = await client.query(text, value);
+
+    for (let i = 0; i < rows.length; i++) {
+      results.push(rows[i]);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400);
+    return res.json({ error: "Unable to Get burgers with user id." });
+  }
+
+  return res.json({ data: results });
 };
 
 export const createBurger: Handler = async (req, res) => {

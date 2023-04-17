@@ -5,7 +5,7 @@ export const verifyingToken: Handler = async (req, res, next) => {
   const token = req.headers.authorization;
 
   try {
-    await admin.auth().verifyIdToken(token);
+    const userData = await admin.auth().verifyIdToken(token);
 
     next();
   } catch (err) {
